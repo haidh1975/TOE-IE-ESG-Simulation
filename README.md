@@ -222,7 +222,7 @@ If you use this code, please cite:
 
 ## Contact
 
-**Dr. Do Huu Hai** (Corresponding Author)  
+**Associate Professor, PhD. Do Huu Hai** (Corresponding Author)  
 Faculty of Management and Banking, Vietnam-Hungary Industrial University (VIU)  
 ORCID: [0000-0001-5811-7154](https://orcid.org/0000-0001-5811-7154)  
 Email: haidh1975@gmail.com  
