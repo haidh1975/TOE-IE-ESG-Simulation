@@ -1,0 +1,6 @@
+Construct,Items,Loading (avg),Cronbach α,CR,AVE,Threshold α≥.70,Threshold CR≥.85,Threshold AVE≥.50
+SubstDig (5 items),5,0.8,0.718,0.899,0.64,✔,✔,✔
+StratDig (4 items),4,0.8,0.736,0.877,0.64,✔,✔,✔
+IndivF   (4 items),4,0.8,0.777,0.877,0.64,✔,✔,✔
+OrgF     (3 items),3,0.78,0.675,0.823,0.608,✘,✘,✔
+OpPerf   (7 items),7,0.7,0.627,0.871,0.49,✘,✔,✘
