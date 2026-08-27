@@ -1,0 +1,9 @@
+Hypothesis,Path,Expected,beta,95% CI,p,Empirical power,Decision
+H1a,ESG -> Substantive digitalization,+,0.164,"[0.081, 0.247]",0.0001,0.648,Significant in this draw ONLY - power 0.65: not reliable
+H1b,ESG -> Strategic digitalization,+,0.045,"[-0.041, 0.130]",0.3067,0.194,Not detectable at n=500 (power 0.19)
+H1c,ESG -> Financing constraints,-,-0.21,"[-0.269, -0.152]",0.0,1.0,Reliably recovered (power adequate)
+H2,Substantive dig. -> Performance,+,0.52,"[0.444, 0.597]",0.0,1.0,Reliably recovered (power adequate)
+H3a,ESG x Myopia -> Substantive dig.,-,-0.128,"[-0.195, -0.062]",0.0001,0.266,Significant in this draw ONLY - power 0.27: not reliable
+H3b,ESG x Myopia -> Strategic dig.,+,0.098,"[0.013, 0.184]",0.024,0.134,Significant in this draw ONLY - power 0.13: not reliable
+H4,ESG x IndivF -> Substantive dig.,+,0.162,"[0.085, 0.238]",0.0,0.742,Significant in this draw ONLY - power 0.74: not reliable
+H5,ESG x Myopia x IndivF (three-way),-,,n/a,,n/a,NOT TESTED - proposition for future primary data

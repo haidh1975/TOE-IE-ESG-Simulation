@@ -1,0 +1,4 @@
+ESG -> FC -> SubstDig indirect effect (5000 bootstrap draws)
+  point estimate : 0.0373
+  95% CI         : [0.0106, 0.0686]
+  excludes zero  : True
