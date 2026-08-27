@@ -1,6 +1,0 @@
-Hypothesis,Replications,Directionally stable,Stability (%),Assessment
-H1a: β(ESG → SubstDig),500,497,99.4,High
-H1b: β(ESG → StratDig),500,410,82.0,Moderate
-H3a: β(ESG×Myopia → SubstDig),500,442,88.4,Moderate
-H3b: β(ESG×Myopia → StratDig),500,396,79.2,Moderate
-H4:  β(ESG×IndivF → SubstDig),500,490,98.0,High
