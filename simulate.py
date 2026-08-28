@@ -32,7 +32,7 @@ manuscript tables. Root causes were diagnosed and corrected:
    independently of ESG. The true ESG->FC effect was therefore exactly zero
    and H1c could not hold by construction. v2.0 encodes the H1c mechanism
    EX ANTE and explicitly: ESG lowers financing constraints through
-   sustainability-linked credit access (Guo et al., 2024).
+   sustainability-linked credit access (Guo et al., 2026).
 
  [FIX 3] INDEX MISIDENTIFICATION.
    -0.737*Size + 0.043*Size^2 - 0.040*Age is the SA index of
@@ -71,9 +71,13 @@ n = 500. This is reported as a finding, not concealed.
 
 ANCHOR STUDIES
 --------------
-[1] Ramos-Vecino et al. (2026). Sustain Technol Entrep, 5, 100136.
-[4] Guo et al. (2024). ESG, managerial myopia and green innovation.
-[6] Nykanen et al. (2023). Cognitive schemas in growth firms.
+[1] Ramos-Vecino N, et al. (2026). Sustainable technology adoption in SMEs.
+    Sustain Technol Entrep, 5, 100136.
+[4] Guo C, Wang Y, Yang Z (2026). ESG and substantive green innovation in
+    enterprises: the moderating effect of managerial myopia.
+    Energy Convers Manag X, 31, 101947.
+[6] Nykanen N, Vuori T, Luoma J (2026). Managerial cognition and data-related
+    capability evolution in growth firms. Long Range Plan, 59, 102637.
 [SA] Hadlock & Pierce (2010). Rev Financ Stud, 23(5), 1909-1940.
 
 USAGE
