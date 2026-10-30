@@ -19,6 +19,16 @@
 > Version 1.0 is superseded and must not be used: Revision-3 reviewers correctly
 > established that it did not reproduce the manuscript. See “Version 2.0” below.
 
+## Supplementary packages
+
+| Package | Status | Contents |
+|---|---|---|
+| [`Supplementary_File_1_Code_v2.1.zip`](Supplementary_File_1_Code_v2.1.zip) | **Current authoritative package.** Use this one. | `simulate.py` v2.1, this README, technical notes, and all 11 outputs plus 6 figure files regenerated under v2.1 |
+| [`Supplementary_File_1_Code.zip`](Supplementary_File_1_Code.zip) | **Historical, v2.0.** Retained for the record; do not use for replication. | The package submitted with the previous revision, before the mediation and conditional-slope corrections |
+
+The v2.1 archive matches the files in this repository. Anything that disagrees with
+the repository should be treated as stale.
+
 Replication package for:
 
 > Nguyen Tien Minh & Do Huu Hai. *An integrated TOE-IE-ESG framework linking ESG
