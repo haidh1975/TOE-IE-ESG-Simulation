@@ -151,7 +151,7 @@ ITEM_SPEC = {
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="TOE-IE-ESG Calibration Simulation v2.0")
+    p = argparse.ArgumentParser(description="TOE-IE-ESG Calibration Simulation v2.1")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--n", type=int, default=500)
     p.add_argument("--sensitivity", action="store_true")
@@ -491,7 +491,7 @@ def power_curve(sizes=(250, 500, 1000, 2000, 4000), reps=300, seed=42):
 # =============================================================================
 def ols_report(fits):
     L = ["=" * 78,
-         "OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.0 AUTHORITATIVE)",
+         "OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.1 AUTHORITATIVE)",
          "HC3 heteroskedasticity-robust standard errors.",
          "All variables standardized (mean 0, SD 1).",
          "Outputs are illustrative, NOT empirical confirmation.",
@@ -626,7 +626,7 @@ def main():
     os.makedirs(a.outdir, exist_ok=True)
 
     print("=" * 78)
-    print("TOE-IE-ESG CALIBRATION SIMULATION  v2.0 (AUTHORITATIVE)")
+    print("TOE-IE-ESG CALIBRATION SIMULATION  v2.1 (AUTHORITATIVE)")
     print(f"seed={a.seed}  n={a.n}  outdir=./{a.outdir}/")
     print("Outputs are ILLUSTRATIVE, not empirical confirmations.")
     print("=" * 78)
