@@ -1,4 +1,4 @@
-# Appendix A — Technical Notes (v2.0, AUTHORITATIVE)
+# Appendix A — Technical Notes (v2.1, AUTHORITATIVE)
 
 ## A.1 Design decision
 
