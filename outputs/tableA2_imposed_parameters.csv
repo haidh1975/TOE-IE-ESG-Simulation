@@ -1,0 +1,23 @@
+Parameter,Imposed value
+SD_ESG,0.11
+SD_Myopia,-0.082
+SD_IndivF,0.3
+SD_OrgF,0.06
+SD_TechF,0.07
+SD_EnvF,0.04
+SD_FC,-0.188
+SD_ESGxMyopia,-0.058
+SD_ESGxIndivF,0.115
+StD_ESG,0.043
+StD_Myopia,0.005
+StD_IndivF,0.085
+StD_ESGxMyopia,0.037
+OP_SubstDig,0.549
+OP_StratDig,0.094
+OP_IndivF,0.104
+FC_ESG,-0.18
+FC_SAindex,0.6
+SD_lnSize,0.05
+SD_Age,0.03
+SD_ROA,0.04
+SD_Leverage,-0.035
