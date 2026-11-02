@@ -1,0 +1,14 @@
+H1c mediation, common covariate set (manuscript Table 8)
+  covariates     : Myopia + IndivF + OrgF + TechF + EnvF + lnSize + Age + ROA + Leverage
+  c  total       : 0.20864
+  a  ESG->FC     : -0.21237
+  b  FC->SubstDig: -0.17492
+  c' direct      : 0.17149
+  a*b indirect   : 0.03715
+  c' + a*b       : 0.20864   |c-(c'+a*b)| = 2.22e-16
+  proportion mediated : 17.8%
+
+bootstrap of a*b (5000 draws)
+  point estimate : 0.0369
+  95% CI         : [0.0100, 0.0690]
+  excludes zero  : True
