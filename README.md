@@ -1,0 +1,248 @@
+# TOE-IE-ESG Framework — Calibration-Based Simulation (v2.2, AUTHORITATIVE)
+
+> [!IMPORTANT]
+> ### Authoritative source
+> **`simulate.py` (v2.2) is the single authoritative source for every number in the
+> manuscript.** Tables 2–9, Appendix Tables A2–A4 **and Figures 2–4** are all generated
+> by this one script from one declared parameter set (`TARGETS`). No number in the
+> paper is entered by hand.
+>
+> **Reproduce everything with one command:**
+> ```bash
+> python simulate.py --seed 42 --n 500 --all --reps 500
+> ```
+>
+> This is a **calibration-based simulation, not an empirical study**. Every number is
+> an illustrative output of an imposed data-generating structure and is not evidence
+> about real SME populations.
+>
+> Version 1.0 is superseded and must not be used: Revision-3 reviewers correctly
+> established that it did not reproduce the manuscript. See “Version 2.0” below.
+
+## Supplementary packages
+
+| Package | Status | Contents |
+|---|---|---|
+| [`Supplementary_File_1_Code_v2.2.zip`](Supplementary_File_1_Code_v2.2.zip) | **Current authoritative package.** Use this one. | `simulate.py` v2.2, this README, the canonical technical notes, all 11 numerical outputs, the figure-generation scripts and Figures 2–4 |
+| [`Supplementary_File_1_Code_v2.1.zip`](Supplementary_File_1_Code_v2.1.zip) | **Historical — v2.1.** Retained for the record; do not use for replication. | The package issued before the HTMT and H1c Monte Carlo corrections |
+| [`Supplementary_File_1_Code.zip`](Supplementary_File_1_Code.zip) | **Historical, v2.0.** Retained for the record; do not use for replication. | The package submitted with the previous revision, before the mediation and conditional-slope corrections |
+
+The v2.1 archive matches the files in this repository. Anything that disagrees with
+the repository should be treated as stale.
+
+Replication package for:
+
+> Nguyen Tien Minh & Do Huu Hai. *An integrated TOE-IE-ESG framework linking ESG
+> performance and managerial cognition to digital transformation quality in SMEs.*
+> **Discover Sustainability** (Springer Nature). Submission ID 94739b1f-6b60-48f4-880a-088c7e4839d7.
+> Corresponding author ORCID: 0000-0001-5811-7154
+
+Repository: https://github.com/haidh1975/TOE-IE-ESG-Simulation
+
+---
+
+## Version 2.2 — current release
+
+Two corrections to the released code. Neither touches the theoretical framework, the
+imposed parameters, the structural equations, the seed or the sample size. v2.1 is
+retained as a historical version.
+
+| # | Problem in v2.1 | Fix in v2.2 |
+|---|---|---|
+| 1 | `htmt_matrix()` averaged **signed** component correlations, so `table4b_htmt.csv` contained negative entries. | Absolute values are taken for every component correlation in both the heterotrait and the monotrait averages. Values now range 0.034–0.567; the maximum is unchanged. |
+| 2 | The Monte Carlo scored H1c against `FC_ESG = −0.180`, defined on the raw financing-constraint scale, while the fitted coefficient is estimated on `z(FC)`. The scale gap was recorded as bias (−0.036) and depressed coverage (0.786). | The target is rescaled per replication by `SD(FC_raw)` with `ddof = 0`. Bias **0.001**, RMSE **0.030**, coverage **0.944**. The DGP equation and the imposed coefficient are unchanged; the correction concerns the Monte Carlo evaluation scale only. |
+
+Only `table4b_htmt.csv`, `tableA3_monte_carlo_performance.csv` and the header of
+`tables5to8_ols_results.txt` change. Table 8 and all primary-sample results reproduce
+unchanged.
+
+Figure 1 is a conceptual framework figure whose architecture is unchanged; its artwork
+was reconstructed as vector because no editable source existed. Figures 2–4 are
+generated from this code by `outputs/figures/make_figs234.py`.
+
+---
+
+## Version 2.1 — historical
+
+Three corrections, all confined to the H1c mediation and the Figure 2 slopes. The
+imposed parameters, the data-generating structure and the Monte Carlo design are
+unchanged, and Tables 2, 3, 4, 4b, A2 and A4 and the reference dataset reproduce
+byte-for-byte against v2.0.
+
+| # | Problem in v2.0 | Fix in v2.1 |
+|---|---|---|
+| 1 | The total effect `c` was read from `M1_SubstDig_baseline`, which already contains `FC`. A path estimated while controlling for the mediator is not a total effect. The a-path model (`FC ~ ESG + SA_index + ROA + Leverage`) and the b/c′ model also carried different covariates, so `a`, `b`, `c` and `c′` were not mutually compatible. | All four paths now use one covariate set, `MED_X`, with `FC` excluded from the `c` equation and included in the `c′` equation. A third model, `M5c_SubstDig_total`, supplies `c`. The decomposition `c = c′ + a·b` now closes to machine precision (residual 2.2e-16). |
+| 2 | `_simple_slope` computed conditional slopes as `β_x ± β_int`. The interaction regressor is the **standardized** product `z(ESG×Myopia)`, so the derivative carries a `1/SD(raw product)` factor that was omitted. | The divisor is applied. With `SD = 0.9752`, the substantive-digitalization slopes are `+0.2957` and `+0.0325` (previously `+0.2924` and `+0.0357`). |
+| 3 | `SA_index` was described as a deterministic function of `lnSize` and `Age`. It is a deterministic function of `lnSize`, `lnSize²` and `Age`, so the three are not exactly collinear. | The comment states the real reason for omitting it: `R²(SA ~ lnSize + Age) = .995` and VIFs of 221, 148 and 81. Adding `SA_index` back moves `c`, `a`, `b` and `c′` by less than `.0004`, because `ESG` and `FC` have VIFs near 1. |
+
+Only four outputs move, all through the H1c path: `table8_indirect_effect.txt`,
+`tables5to8_ols_results.txt`, and the H1c rows of `table9_hypotheses.csv`
+(β −0.210 → −0.212) and `tableA3_monte_carlo_performance.csv`
+(bias −0.035 → −0.036, RMSE 0.047 → 0.048, coverage 0.776 → 0.786).
+
+---
+
+## Version 2.0 — what changed from v1.0 and why
+
+Revision-3 reviewers correctly established that v1.0 outputs did **not** match the
+manuscript. All causes were diagnosed and fixed:
+
+| # | Problem in v1.0 | Fix in v2.0 |
+|---|---|---|
+| 1 | Construct scores were generated, rescaled, then **re-generated as noisy item means** and analysed. This second measurement layer attenuated every coefficient (reliability ≈ .75) and shifted all means, so fitted estimates could never equal imposed parameters. | Regressions are estimated on the **generated construct scores** — the level at which anchor parameters are defined. Item indicators are a **separate layer used only for the measurement check** and are never used in estimation. Imposed *and* recovered parameters are both reported. |
+| 2 | **`ESG → FC` was never encoded.** FC depended only on size and age, both independent of ESG, so the true effect was exactly zero and H1c could not hold. | The H1c mechanism is now **encoded ex ante and explicitly** (`FC_ESG = −0.180`), justified by sustainability-linked credit access (Guo et al. 2026). The indirect effect is **bootstrapped directly** (5,000 draws), not inferred. |
+| 3 | Index called **Kaplan-Zingales**. | It is the **SA index** (Hadlock & Pierce 2010). Corrected. `Size = ln(total assets)`, `Age = years since founding`. |
+| 4 | **HTMT reported but never computed.** | HTMT is now computed from the retained item matrix. |
+| 5 | Single-item **ESG appeared in α/CR/AVE**. | ESG is excluded; α, CR and AVE are undefined for one indicator. |
+| 6 | Sensitivity applied **one common multiplier** to all coefficients and reported only sign retention. | Each coefficient is perturbed **independently**; the script reports **empirical power, mean recovered β, bias, RMSE and 95% CI coverage**, plus a power curve across sample sizes. |
+| 7 | `TechF`, `EnvF` and the controls appeared in manuscript equations but **were never generated**. | All are generated and entered in the fitted models. |
+| 8 | Text said **"clustered at firm level"**; code used HC3. | Everything now says **HC3 heteroskedasticity-robust**. |
+
+A collinearity error was also removed: `SA_index` is a deterministic function of
+`lnSize` and `Age`, so those two no longer enter the FC equation alongside it.
+
+---
+
+## Headline result you should not miss
+
+At **n = 500**, only **H1c** and **H2** are reliably recovered (power = 1.00).
+The interaction hypotheses are **not** reliably detectable:
+
+| Hypothesis | Empirical power at n = 500 |
+|---|---|
+| H1a ESG → Substantive digitalization | 0.65 |
+| H1b ESG → Strategic digitalization | 0.19 |
+| H1c ESG → Financing constraints | **1.00** |
+| H2 Substantive dig. → Performance | **1.00** |
+| H3a ESG × Myopia → Substantive dig. | 0.27 |
+| H3b ESG × Myopia → Strategic dig. | 0.13 |
+| H4 ESG × IndivF → Substantive dig. | 0.74 |
+
+These figures come from `tableA3_monte_carlo_performance.csv`, in which every
+coefficient is perturbed independently, so they incorporate parameter uncertainty as
+well as sampling variability. `tableA4_power_curve.csv` holds the coefficients fixed
+at their imposed values and therefore reports slightly higher power at the same
+n = 500 (H1a .70, H1b .21, H3a .28, H3b .17, H4 .77). Both are correct; they answer
+different questions, and the manuscript uses the perturbed values because they are
+the more conservative of the two.
+
+A single replication can cross p < .05 by a favourable draw when power is this low,
+so **Table 9 decisions are power-aware**: a path is called reliably recovered only if
+it is significant *and* power ≥ .80. This is a substantive finding, and the required sample size differs by path (see
+`tableA4_power_curve.csv`): **H4** already reaches 0.983 power at n = 1,000; **H3a**
+first exceeds 0.80 at n = 4,000; **H3b** remains below 0.80 even at n = 4,000. The
+blanket figure of n ≈ 2,000–4,000 previously quoted here was wrong for H4.
+
+---
+
+## Repository layout
+
+```
+simulate.py                     authoritative script — generates everything
+requirements.txt                dependencies
+README.md                       this file
+LICENSE                         MIT
+CITATION.cff                    citation metadata
+docs/Appendix_A_Technical_Notes.md   design decision, imposed parameters, generation steps
+outputs/                        11 generated tables + reference dataset
+outputs/figures/                Figures 2–4 (PNG 300 dpi + PDF)
+```
+
+---
+
+## Quick start
+
+```bash
+git clone https://github.com/haidh1975/TOE-IE-ESG-Simulation.git
+cd TOE-IE-ESG-Simulation
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python simulate.py --seed 42 --n 500 --all --reps 500
+```
+
+That command reproduces every manuscript table, appendix table and numerical output.
+Figures 2–4 are produced separately by `outputs/figures/make_figs234.py`, which imports
+`simulate.py` and reads `outputs/tableA4_power_curve.csv`; run it after the command
+above. Figure 1 is the conceptual framework and is drawn by
+`outputs/figures/make_fig1_conceptual.py`; it is not generated from simulation output.
+
+| Flag | Effect |
+|---|---|
+| `--seed 42` | Seed used for the manuscript (default) |
+| `--n 500` | Sample size used for the manuscript (default) |
+| `--sensitivity` | Monte Carlo performance study (power/bias/RMSE/coverage) |
+| `--power` | Power curve across n = 250…4,000 |
+| `--all` | Both of the above |
+| `--reps 500` | Monte Carlo replications |
+
+Runtime for `--all --reps 500`: roughly 10–20 minutes.
+
+---
+
+## Output → manuscript map
+
+| Output file | Manuscript element |
+|---|---|
+| `reference_dataset.csv` | The N = 500 analysed dataset |
+| `table2_descriptives.csv` | Table 2 |
+| `table3_correlations.csv` | Table 3 |
+| `table4_measurement_check.csv` | Table 4 (α, CR, AVE) |
+| `table4b_htmt.csv` | Table 4b (HTMT) |
+| `tables5to8_ols_results.txt` | Tables 5–8 (Models M1–M5b) |
+| `table8_indirect_effect.txt` | Table 8 — H1c **partial**-mediation decomposition (c, a, b, c′, a·b, proportion mediated = 17.8%) |
+| `table9_hypotheses.csv` | Table 9 (power-aware decisions) |
+| `tableA2_imposed_parameters.csv` | Appendix Table A2 |
+| `tableA3_monte_carlo_performance.csv` | Appendix Table A3 |
+| `tableA4_power_curve.csv` | Appendix Table A4 |
+| `figures/figure2_myopia_moderation.png/.pdf` | Figure 2 |
+| `figures/figure3_mediation_path.png/.pdf` | Figure 3 |
+| `figures/figure4_power_curve.png/.pdf` | Figure 4 |
+
+---
+
+## Design decision you should understand before reading the code
+
+The anchor parameters are defined at construct level, so **regressions target the
+generated construct scores**. The item layer exists only to show that the calibration
+reproduces anchor-study reliability benchmarks. Analysing noisy item means instead
+would attenuate every coefficient — that was exactly the v1.0 error. Both imposed and
+recovered parameters are reported so recovery can be verified directly
+(`tableA3_monte_carlo_performance.csv`: all biases ≤ .005 except the standardised
+mediator path, a known scaling artefact discussed in the manuscript).
+
+---
+
+## Anchor studies
+
+| Source | Parameters used |
+|---|---|
+| Ramos-Vecino et al. (2026), *Sustain Technol Entrep* 5:100136 | β(IndivF→Dig) ≈ .302; β(Dig→Perf) ≈ .549 |
+| Guo C, Wang Y, Yang Z (2026), *Energy Convers Manag X* 31:101947 | β(ESG→Substantive) ≈ .11; β(Myopia) ≈ −.082; β(ESG×Myopia) ≈ −.058 |
+| Nykänen N, Vuori T, Luoma J (2026), *Long Range Plan* 59:102637 | ≈ 50% opportunity-dominant cognitive schemas |
+| Hadlock & Pierce (2010), *Rev Financ Stud* 23(5):1909–1940 | SA index |
+
+## Requirements
+
+`numpy≥1.24`, `scipy≥1.10`, `pandas≥2.0`, `statsmodels≥0.14`, `matplotlib≥3.7` — Python 3.9+.
+
+## Citation
+
+```bibtex
+@article{NguyenDo2025TOEIEESG,
+  title   = {An integrated TOE-IE-ESG framework linking ESG performance and
+             managerial cognition to digital transformation quality in
+             small and medium-sized enterprises},
+  author  = {Nguyen, Tien Minh and Do, Huu Hai},
+  journal = {Discover Sustainability},
+  year    = {2025},
+  url     = {https://github.com/haidh1975/TOE-IE-ESG-Simulation}
+}
+```
+
+## License
+
+MIT — see `LICENSE`.
+
+## Contact
+
+Do Huu Hai (corresponding author) · ORCID 0000-0001-5811-7154 · haidh1975@gmail.com
