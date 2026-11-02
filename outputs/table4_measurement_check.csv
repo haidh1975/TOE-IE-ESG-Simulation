@@ -1,0 +1,8 @@
+Construct,Items,Mean loading,Cronbach alpha,CR,AVE,alpha>=.70,CR>=.70,AVE>=.50
+SubstDig,5,0.82,0.909,0.911,0.672,Yes,Yes,Yes
+StratDig,4,0.8,0.875,0.877,0.64,Yes,Yes,Yes
+IndivF,4,0.81,0.889,0.884,0.656,Yes,Yes,Yes
+OrgF,3,0.79,0.849,0.833,0.624,Yes,Yes,Yes
+TechF,3,0.78,0.808,0.823,0.608,Yes,Yes,Yes
+EnvF,3,0.78,0.832,0.823,0.608,Yes,Yes,Yes
+OpPerf,7,0.74,0.897,0.894,0.548,Yes,Yes,Yes

@@ -1,0 +1,8 @@
+,SubstDig,StratDig,IndivF,OrgF,TechF,EnvF,OpPerf
+SubstDig,,0.052,0.278,0.049,0.048,0.089,0.567
+StratDig,,,0.084,0.057,0.034,0.034,0.123
+IndivF,,,,0.037,0.055,0.068,0.327
+OrgF,,,,,0.064,0.045,0.13
+TechF,,,,,,0.045,0.057
+EnvF,,,,,,,0.083
+OpPerf,,,,,,,
