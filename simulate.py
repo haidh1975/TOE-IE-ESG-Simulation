@@ -1,6 +1,6 @@
 """
 =============================================================================
-TOE-IE-ESG Framework: Calibration-Based Simulation  (v2.1 - AUTHORITATIVE)
+TOE-IE-ESG Framework: Calibration-Based Simulation  (v2.2 - AUTHORITATIVE)
 =============================================================================
 Paper  : "An integrated TOE-IE-ESG framework linking ESG performance and
           managerial cognition to digital transformation quality in SMEs"
@@ -151,7 +151,7 @@ ITEM_SPEC = {
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="TOE-IE-ESG Calibration Simulation v2.1")
+    p = argparse.ArgumentParser(description="TOE-IE-ESG Calibration Simulation v2.2")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--n", type=int, default=500)
     p.add_argument("--sensitivity", action="store_true")
@@ -228,7 +228,7 @@ def build_dataset(n=500, seed=42, coefs=None):
               + C["OP_IndivF"]*ind
               + rng.normal(0, SIGMA["OpPerf"], n))
 
-    return pd.DataFrame({
+    out = pd.DataFrame({
         "ESG": esg, "Myopia": myo, "IndivF": ind, "OrgF": org,
         "TechF": tec, "EnvF": env, "FC": fc,
         "SubstDig": z(SubstDig), "StratDig": z(StratDig), "OpPerf": z(OpPerf),
@@ -236,6 +236,12 @@ def build_dataset(n=500, seed=42, coefs=None):
         "lnSize": lns, "Age": age, "ROA": roa, "Leverage": lev,
         "SA_index": z(SA),
     })
+    # [v2.2 CORRECTION] FC is generated on a raw scale and standardised before
+    # estimation, so the imposed FC_ESG coefficient is NOT on the scale of the
+    # fitted coefficient. The realised SD of the raw FC is carried here (ddof=0,
+    # matching z()) so the Monte Carlo can place the target on the fitted scale.
+    out.attrs["sd_FC_raw"] = float(np.std(FC, ddof=0))
+    return out
 
 
 def generate_item_matrix(df, seed=42):
@@ -287,24 +293,33 @@ def measurement_check(items):
 
 
 def htmt_matrix(items):
-    """[FIX 4] Heterotrait-monotrait ratio from item-level data."""
+    """
+    Heterotrait-monotrait ratio from item-level data.
+
+    [v2.2 CORRECTION] The earlier implementation averaged SIGNED correlations,
+    which produced negative HTMT entries. HTMT is a ratio of average absolute
+    correlations (Henseler, Ringle & Sarstedt 2015), so |r| is taken for every
+    monotrait and heterotrait element before averaging. The arithmetic is
+    otherwise unchanged: mean |heterotrait-heteromethod| divided by the geometric
+    mean of the two mean |monotrait-heteromethod| values.
+    """
     names = list(items.keys())
     M = pd.DataFrame(np.nan, index=names, columns=names, dtype=float)
 
     def mono(X):
         k = X.shape[1]
-        return np.mean([np.corrcoef(X[:, p], X[:, q])[0, 1]
-                        for p in range(k) for q in range(p + 1, k)])
+        return float(np.mean([abs(np.corrcoef(X[:, p], X[:, q])[0, 1])
+                              for p in range(k) for q in range(p + 1, k)]))
 
     for i, aa in enumerate(names):
         for j, bb in enumerate(names):
             if i >= j:
                 continue
             Xa, Xb = items[aa], items[bb]
-            hetero = np.mean([[np.corrcoef(Xa[:, p], Xb[:, q])[0, 1]
-                               for q in range(Xb.shape[1])]
-                              for p in range(Xa.shape[1])])
-            M.loc[aa, bb] = round(float(hetero / np.sqrt(mono(Xa) * mono(Xb))), 3)
+            hetero = float(np.mean([[abs(np.corrcoef(Xa[:, p], Xb[:, q])[0, 1])
+                                     for q in range(Xb.shape[1])]
+                                    for p in range(Xa.shape[1])]))
+            M.loc[aa, bb] = round(hetero / np.sqrt(mono(Xa) * mono(Xb)), 3)
     return M
 
 
@@ -453,6 +468,9 @@ def monte_carlo(n=500, reps=1000, seed=42, perturb=0.20):
             b, p = float(res.params[var]), float(res.pvalues[var])
             ci = res.conf_int().loc[var]
             tgt = C[tkey]
+            if h == "H1c":
+                # target on the standardised-FC scale used by the fitted model
+                tgt = tgt / d.attrs["sd_FC_raw"]
             acc[h]["b"].append(b)
             acc[h]["sig"].append(p < .05)
             acc[h]["cov"].append(bool(ci.iloc[0] <= tgt <= ci.iloc[1]))
@@ -491,7 +509,7 @@ def power_curve(sizes=(250, 500, 1000, 2000, 4000), reps=300, seed=42):
 # =============================================================================
 def ols_report(fits):
     L = ["=" * 78,
-         "OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.1 AUTHORITATIVE)",
+         "OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.2 AUTHORITATIVE)",
          "HC3 heteroskedasticity-robust standard errors.",
          "All variables standardized (mean 0, SD 1).",
          "Outputs are illustrative, NOT empirical confirmation.",
@@ -626,7 +644,7 @@ def main():
     os.makedirs(a.outdir, exist_ok=True)
 
     print("=" * 78)
-    print("TOE-IE-ESG CALIBRATION SIMULATION  v2.1 (AUTHORITATIVE)")
+    print("TOE-IE-ESG CALIBRATION SIMULATION  v2.2 (AUTHORITATIVE)")
     print(f"seed={a.seed}  n={a.n}  outdir=./{a.outdir}/")
     print("Outputs are ILLUSTRATIVE, not empirical confirmations.")
     print("=" * 78)

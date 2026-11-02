@@ -1,8 +1,8 @@
-# TOE-IE-ESG Framework — Calibration-Based Simulation (v2.1, AUTHORITATIVE)
+# TOE-IE-ESG Framework — Calibration-Based Simulation (v2.2, AUTHORITATIVE)
 
 > [!IMPORTANT]
 > ### Authoritative source
-> **`simulate.py` (v2.1) is the single authoritative source for every number in the
+> **`simulate.py` (v2.2) is the single authoritative source for every number in the
 > manuscript.** Tables 2–9, Appendix Tables A2–A4 **and Figures 2–4** are all generated
 > by this one script from one declared parameter set (`TARGETS`). No number in the
 > paper is entered by hand.
@@ -40,7 +40,28 @@ Repository: https://github.com/haidh1975/TOE-IE-ESG-Simulation
 
 ---
 
-## Version 2.1 — what changed from v2.0
+## Version 2.2 — current release
+
+Two corrections to the released code. Neither touches the theoretical framework, the
+imposed parameters, the structural equations, the seed or the sample size. v2.1 is
+retained as a historical version.
+
+| # | Problem in v2.1 | Fix in v2.2 |
+|---|---|---|
+| 1 | `htmt_matrix()` averaged **signed** component correlations, so `table4b_htmt.csv` contained negative entries. | Absolute values are taken for every component correlation in both the heterotrait and the monotrait averages. Values now range 0.034–0.567; the maximum is unchanged. |
+| 2 | The Monte Carlo scored H1c against `FC_ESG = −0.180`, defined on the raw financing-constraint scale, while the fitted coefficient is estimated on `z(FC)`. The scale gap was recorded as bias (−0.036) and depressed coverage (0.786). | The target is rescaled per replication by `SD(FC_raw)` with `ddof = 0`. Bias **0.001**, RMSE **0.030**, coverage **0.944**. The DGP equation and the imposed coefficient are unchanged; the correction concerns the Monte Carlo evaluation scale only. |
+
+Only `table4b_htmt.csv`, `tableA3_monte_carlo_performance.csv` and the header of
+`tables5to8_ols_results.txt` change. Table 8 and all primary-sample results reproduce
+unchanged.
+
+Figure 1 is a conceptual framework figure whose architecture is unchanged; its artwork
+was reconstructed as vector because no editable source existed. Figures 2–4 are
+generated from this code by `outputs/figures/make_figs234.py`.
+
+---
+
+## Version 2.1 — historical
 
 Three corrections, all confined to the H1c mediation and the Figure 2 slopes. The
 imposed parameters, the data-generating structure and the Monte Carlo design are
