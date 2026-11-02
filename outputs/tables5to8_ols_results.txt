@@ -1,5 +1,5 @@
 ==============================================================================
-OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.1 AUTHORITATIVE)
+OLS RESULTS - TOE-IE-ESG CALIBRATION ILLUSTRATION (v2.2 AUTHORITATIVE)
 HC3 heteroskedasticity-robust standard errors.
 All variables standardized (mean 0, SD 1).
 Outputs are illustrative, NOT empirical confirmation.

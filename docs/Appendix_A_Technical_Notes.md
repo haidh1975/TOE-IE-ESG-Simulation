@@ -1,4 +1,7 @@
-# Appendix A — Technical Notes (v2.1, AUTHORITATIVE)
+# Appendix A — Technical Notes (v2.2, AUTHORITATIVE)
+
+*Sections A.1–A.4 describe the data-generating structure, which is unchanged across
+releases. Sections A.5–A.8 document the corrections introduced in v2.1.*
 
 ## A.1 Design decision
 
@@ -36,6 +39,23 @@ equation was altered between v2.0 and v2.1.
 4. **Measurement layer (check only)** — `x_ij = λ·L_i + √(1−λ²)·ε_ij`, λ ≈ .74–.82.
 5. **Interactions** — z-standardised products of standardised constituents.
    This standardisation matters for interpretation and is discussed in A.6.
+
+## A.4 Monte Carlo performance and power
+
+Each coefficient is perturbed **independently** by Uniform(0.8, 1.2) over 500
+replications. Reported per hypothesis: imposed mean, recovered mean, bias, RMSE,
+empirical power, 95% CI coverage.
+
+Recovery is unbiased for six of the seven paths (|bias| ≤ .005, coverage .940–.962).
+The seventh, the standardised mediator path H1c, is the exception discussed in A.7.
+
+**Empirical power at n = 500:** H1a .65 · H1b .19 · H1c 1.00 · H2 1.00 ·
+H3a .27 · H3b .13 · H4 .74.
+
+**Power curve** (`tableA4_power_curve.csv`) shows the interactions need roughly
+n ≈ 2,000–4,000 to reach conventional power. Consequently Table 9 decisions are
+**power-aware**: significance in a single draw is not treated as reliable recovery
+when power is below .80.
 
 ---
 
@@ -155,71 +175,76 @@ consistent with how the data were generated.
 
 ## A.7 H1c in the Monte Carlo study
 
-Correcting the `a`-path specification changes the Monte Carlo row for H1c. No other
-row moves, because no other path depends on `M5a`.
+### A scale mismatch in the evaluation, now corrected
 
-| Statistic | v2.0 | v2.1 |
+Earlier versions reported H1c as an exception: bias −0.036, RMSE 0.048, coverage
+0.786, against |bias| ≤ 0.005 and coverage 0.940–0.962 for the other six paths. That
+deviation was attributed to the behaviour of a standardised mediator and described as
+an intrinsic property of the design. **That attribution was wrong.**
+
+The cause was a scale mismatch in the scoring, not in the estimator. Financing
+constraints are generated on a raw scale,
+
+```
+FC_raw = 0.600·z(SA) + (−0.180)·z(ESG) + ε,   ε ~ N(0, 0.55²)
+```
+
+and then standardised before estimation, so the fitted model regresses on `z(FC)`.
+The Monte Carlo was comparing the recovered coefficient against the imposed value
+`FC_ESG = −0.180`, which is defined on the raw scale. The two are not the same
+quantity, and the gap between them was being recorded as bias.
+
+### The correction
+
+The target is now rescaled inside each replication by the realised standard deviation
+of the raw financing-constraint variable, using the same `ddof = 0` convention as the
+`z()` function in the code:
+
+```
+target_standardised = FC_ESG / SD(FC_raw)
+```
+
+`build_dataset` carries that standard deviation on the returned frame
+(`df.attrs["sd_FC_raw"]`) so the scaling is replication-specific rather than applied
+as a single constant.
+
+### Result
+
+| Statistic | Before correction | After correction |
 |---|---|---|
-| Bias | −0.035 | **−0.036** |
-| RMSE | 0.047 | **0.048** |
-| 95% CI coverage | 0.776 | **0.786** |
+| Imposed (mean, on fitted scale) | −0.180 | **−0.217** |
+| Recovered (mean) | −0.216 | −0.216 |
+| Bias | −0.036 | **0.001** |
+| RMSE | 0.048 | **0.030** |
+| 95% CI coverage | 0.786 | **0.944** |
 | Empirical power | 1.00 | 1.00 |
 
-### This is not a small bias, and the coverage is not near nominal
+H1c now behaves like the other six paths. There is no anomaly to explain, and the
+earlier discussion of a large bias in a standardised mediator is withdrawn.
 
-The v2.0 notes described the H1c deviation as a "small bias" and reported coverage as
-"≈ .95 except" for this path. Both descriptions understate the problem and are
-withdrawn.
+### Scope of the change
 
-The imposed value is −0.180 and the mean recovered value is −0.216. The bias of
-−0.036 is **20% of the imposed coefficient**, an order of magnitude larger than the
-next-largest absolute bias in the table (0.005 for H4). Coverage of **0.786** means
-that in roughly one replication in five the 95% interval fails to contain the imposed
-value; nominal behaviour would miss it in one in twenty. Neither figure should be
-summarised alongside the other six paths, which have |bias| ≤ 0.005 and coverage
-between 0.940 and 0.962.
+No structural equation, imposed parameter, seed or sample size was altered. Only the
+yardstick used to score the Monte Carlo changed. The primary-sample results are
+untouched: Table 8 and the H1c row of Table 9 are byte-identical to the previous
+release, and `reference_dataset.csv`, `table2_descriptives.csv`,
+`table3_correlations.csv`, `table4_measurement_check.csv`, `table8_indirect_effect.txt`,
+`table9_hypotheses.csv`, `tableA2_imposed_parameters.csv` and
+`tableA4_power_curve.csv` all reproduce unchanged. Only
+`tableA3_monte_carlo_performance.csv` and `table4b_htmt.csv` move.
 
-### Why H1c behaves differently
+### A.7b HTMT computed on absolute correlations
 
-`FC` is standardised after generation. The imposed coefficient `FC_ESG = −0.180`
-applies to `FC` on its generating scale, whereas the recovered coefficient is
-estimated on `z(FC)`. The two differ by the realised standard deviation of the
-generated `FC`, which itself varies across replications because each replication
-perturbs `FC_SAindex` and `FC_ESG` independently. The estimator is therefore
-recovering a target that moves with the perturbation, which displaces the sampling
-distribution relative to the fixed nominal value used for the coverage calculation.
+A second correction in the same release. `htmt_matrix()` averaged **signed**
+correlations, which produced negative HTMT entries in `table4b_htmt.csv` — for
+example −0.054 between strategic digitalization and the organizational factor. HTMT
+is a ratio of average **absolute** correlations (Henseler, Ringle & Sarstedt 2015), so
+`abs()` is now applied to every monotrait and heterotrait element before averaging.
+The arithmetic is otherwise unchanged.
 
-This is a property of the calibration design, not a defect in the estimator. The
-honest reading is that **the H1c row quantifies how far the standardised mediator
-path can be trusted, and the answer is: less than the other six paths**. The
-manuscript reports the figures without adjustment and treats them as a calibration
-diagnostic rather than as evidence about mediation in real SMEs.
-
-### Unchanged Monte Carlo elements
-
-Perturbation remains independent Uniform(0.8, 1.2) per coefficient over 500
-replications with the same seed sequence. Empirical power is unchanged for every
-path: H1a .648 · H1b .194 · H1c 1.000 · H2 1.000 · H3a .266 · H3b .134 · H4 .742.
-
-## A.4 Monte Carlo performance and power
-
-*(Retained from v2.0 for continuity. Where this section and A.7 differ on H1c, A.7
-supersedes it.)*
-
-Each coefficient is perturbed **independently** by Uniform(0.8, 1.2) over 500
-replications. Reported per hypothesis: imposed mean, recovered mean, bias, RMSE,
-empirical power, 95% CI coverage.
-
-Recovery is unbiased for six of the seven paths (|bias| ≤ .005, coverage .940–.962).
-The seventh, the standardised mediator path H1c, is the exception discussed in A.7.
-
-**Empirical power at n = 500:** H1a .65 · H1b .19 · H1c 1.00 · H2 1.00 ·
-H3a .27 · H3b .13 · H4 .74.
-
-**Power curve** (`tableA4_power_curve.csv`) shows the interactions need roughly
-n ≈ 2,000–4,000 to reach conventional power. Consequently Table 9 decisions are
-**power-aware**: significance in a single draw is not treated as reliable recovery
-when power is below .80.
+All entries are now finite and non-negative, ranging from 0.034 to 0.567. The maximum
+is unchanged at 0.567 (substantive digitalization with operational performance), so
+the discriminant-validity statement in the manuscript stands.
 
 ## A.8 Conditional slopes with a standardised interaction
 
